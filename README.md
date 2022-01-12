@@ -4,5 +4,10 @@
 1.ROOM (Entity, Dao, Database)\
 2.MVVM (Repository, ViewModel)\
 3.RecyclerView\
-4.menu\
-5.Add note (use registerForActivity get data from other activity)
+4.Menu\
+5.Dialog
+
+*Add note (use registerForActivity get data from other activity)\
+*SwipeDelete note\
+*Menu delet all note\
+*Edit note
