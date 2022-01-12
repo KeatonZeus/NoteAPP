@@ -36,7 +36,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-
+    //RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     // ViewModel
     def lifecycle_version = "2.4.0"
     def arch_version = "2.1.0"
@@ -49,5 +50,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     //cardView
     implementation "androidx.cardview:cardview:1.0.0"
-
+    //dialog
+    implementation 'com.lxj:xpopup:2.2.23'
 }

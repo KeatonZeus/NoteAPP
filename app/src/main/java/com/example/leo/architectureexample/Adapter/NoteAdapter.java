@@ -39,6 +39,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
         return noteList.size();
     }
 
+    //get the position in list
+    public Note getNotePosition(int position){
+        return noteList.get(position);
+    }
+
     //
     public void setNotes(List<Note> noteList){
         this.noteList = noteList;
