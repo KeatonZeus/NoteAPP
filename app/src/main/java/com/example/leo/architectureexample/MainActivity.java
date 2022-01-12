@@ -4,9 +4,11 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +16,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,13 +26,17 @@ import com.example.leo.architectureexample.Adapter.NoteAdapter;
 import com.example.leo.architectureexample.Model.Note;
 import com.example.leo.architectureexample.ViewModel.NoteViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.interfaces.OnConfirmListener;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    public static final int ADD_NOTE_REQUEST = 1;
+
+    private RecyclerView recyclerView;
+
     private NoteViewModel noteViewModel;
 
     private NoteAdapter noteAdapter;
@@ -39,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         initRecyclerView();
         initFabButton();
+        initSwipeListToDeleteItem();
 
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
@@ -51,6 +61,60 @@ public class MainActivity extends AppCompatActivity {
                 noteAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_delet_all_note,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_delete_all:
+
+                new XPopup.Builder(MainActivity.this).asConfirm("Delete All Notes", "Are you sure?",
+                        new OnConfirmListener() {
+                            @Override
+                            public void onConfirm() {
+                                Log.d(TAG, "onConfirm: dialog delete all notes");
+                                noteViewModel.deleteAllNotes();
+                                noteAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .show();
+
+                return true;
+
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void initSwipeListToDeleteItem() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Toast.makeText(MainActivity.this, "on Move", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                Toast.makeText(MainActivity.this, "on Swiped Note Deleted", Toast.LENGTH_SHORT).show();
+                //Remove swiped item from list and notify the RecyclerView
+                int position = viewHolder.getBindingAdapterPosition();
+                noteViewModel.delete(noteAdapter.getNotePosition(position));
+                //noteAdapter.notifyDataSetChanged();
+                noteAdapter.notifyItemRemoved(position);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void initFabButton() {
@@ -88,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView;
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

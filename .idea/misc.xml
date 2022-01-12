@@ -5,7 +5,9 @@
       <map>
         <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/layout/activity_add_note.xml" value="0.33" />
         <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/layout/activity_main.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/layout/dialog_delete_all_notes.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/layout/item_note.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/menu/menu_delet_all_note.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/LEO/AndroidStudioProjects/Demo/ArchitectureExample/app/src/main/res/menu/menu_save_note.xml" value="0.38697916666666665" />
       </map>
     </option>
