@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.leo.architectureexample.Adapter.NoteAdapter;
+import com.example.leo.architectureexample.Interface.ItemClickListener;
 import com.example.leo.architectureexample.Model.Note;
 import com.example.leo.architectureexample.ViewModel.NoteViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,7 +32,7 @@ import com.lxj.xpopup.interfaces.OnConfirmListener;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ItemClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private NoteViewModel noteViewModel;
 
     private NoteAdapter noteAdapter;
+
+    private List<Note> noteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onConfirm() {
                                 Log.d(TAG, "onConfirm: dialog delete all notes");
                                 noteViewModel.deleteAllNotes();
-                                noteAdapter.notifyDataSetChanged();
+                                //noteAdapter.notifyDataSetChanged();
                             }
                         })
                         .show();
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 int position = viewHolder.getBindingAdapterPosition();
                 noteViewModel.delete(noteAdapter.getNotePosition(position));
                 //noteAdapter.notifyDataSetChanged();
-                noteAdapter.notifyItemRemoved(position);
+                //noteAdapter.notifyItemRemoved(position);
             }
         };
 
@@ -155,7 +158,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        noteAdapter = new NoteAdapter();
+        noteAdapter = new NoteAdapter(this,this,noteList); //實作介面所以中間那個用this
         recyclerView.setAdapter(noteAdapter);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Log.d(TAG, "onItemClick: "+ position);
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        Log.d(TAG, "onItemLongClick: "+ position);
     }
 }
