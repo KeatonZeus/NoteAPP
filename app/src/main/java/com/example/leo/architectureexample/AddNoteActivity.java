@@ -13,6 +13,7 @@ import android.widget.NumberPicker;
 import android.widget.Toast;
 
 public class AddNoteActivity extends AppCompatActivity {
+    public static final String EXTRA_ID =  "com.example.leo.architectureexample.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.example.leo.architectureexample.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.example.leo.architectureexample.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.example.leo.architectureexample.EXTRA_PRIORITY";
@@ -25,16 +26,31 @@ public class AddNoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
 
+        initView();
+
+        //action bar 左邊
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
+        getSupportActionBar().setHomeActionContentDescription("CLOSE");
+
+        //資料有ID ? 做Edit : 做Add
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)){
+            setTitle("Edit Note");
+            edt_title.setText(intent.getStringExtra(EXTRA_TITLE));
+            edt_description.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            numberPicker_priority.setValue(intent.getIntExtra(EXTRA_PRIORITY,1));
+        }else {
+            setTitle("Add Note");
+        }
+    }
+
+    private void initView() {
         edt_title = findViewById(R.id.edt_title);
         edt_description = findViewById(R.id.edt_description);
         numberPicker_priority = findViewById(R.id.numberPicker_priority);
 
         numberPicker_priority.setMaxValue(5);
         numberPicker_priority.setMinValue(1);
-
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
-        getSupportActionBar().setHomeActionContentDescription("CLOSE");
-        setTitle("Add Note");
     }
 
     //get note from edt and numPicker, using startActivityForResult
@@ -52,6 +68,13 @@ public class AddNoteActivity extends AppCompatActivity {
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_DESCRIPTION, description);
         data.putExtra(EXTRA_PRIORITY, priority);
+
+        //取得id 丟回MainActivity
+        int id = getIntent().getIntExtra(EXTRA_ID,-1);
+        if (id != -1){
+            data.putExtra(EXTRA_ID,id);
+        }
+
         setResult(RESULT_OK, data);
         finish();
     }

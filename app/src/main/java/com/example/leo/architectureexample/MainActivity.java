@@ -30,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnConfirmListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ItemClickListener {
@@ -42,7 +43,9 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     private NoteAdapter noteAdapter;
 
-    private List<Note> noteList;
+    private List<Note> noteList = new ArrayList<>();
+
+    private ActivityResultLauncher<Intent> launcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         initRecyclerView();
         initFabButton();
         initSwipeListToDeleteItem();
+        initUpdateNoteLauncher();
 
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
@@ -158,13 +162,55 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        noteAdapter = new NoteAdapter(this,this,noteList); //實作介面所以中間那個用this
+        noteAdapter = new NoteAdapter(this,this,noteList); //已實作介面所以中間那個用this
         recyclerView.setAdapter(noteAdapter);
+    }
+
+    private void initUpdateNoteLauncher() {
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+
+                            Intent data = result.getData();
+
+                            //接收回來的data
+                            if (data.hasExtra(AddNoteActivity.EXTRA_ID)) {
+                                int id_update = data.getIntExtra(AddNoteActivity.EXTRA_ID, -1);
+                                String title_update = data.getStringExtra(AddNoteActivity.EXTRA_TITLE);
+                                String description_update = data.getStringExtra(AddNoteActivity.EXTRA_DESCRIPTION);
+                                int priority_update = data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY, 1);
+                                Note note_update = new Note(title_update, description_update, priority_update);
+
+                                note_update.setId(id_update);
+                                noteViewModel.update(note_update);
+
+                                Toast.makeText(MainActivity.this, "Note Updated Successful", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
     public void onItemClick(int position) {
-        Log.d(TAG, "onItemClick: "+ position);
+        Log.d(TAG, "onItemClick: " + position);
+
+        //intent data to next Activity
+        int id = noteAdapter.getNotePosition(position).getId();
+        String title = noteAdapter.getNotePosition(position).getTitle();
+        String description = noteAdapter.getNotePosition(position).getDescription();
+        int priority = noteAdapter.getNotePosition(position).getPriority();
+
+        Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+        intent.putExtra(AddNoteActivity.EXTRA_ID, id);
+        intent.putExtra(AddNoteActivity.EXTRA_TITLE, title);
+        intent.putExtra(AddNoteActivity.EXTRA_DESCRIPTION, description);
+        intent.putExtra(AddNoteActivity.EXTRA_PRIORITY, priority);
+
+        launcher.launch(intent);
     }
 
     @Override
