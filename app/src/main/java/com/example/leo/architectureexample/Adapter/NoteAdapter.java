@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.leo.architectureexample.Interface.ItemClickListener;
@@ -17,19 +19,38 @@ import com.example.leo.architectureexample.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
+public class NoteAdapter extends ListAdapter<Note, NoteAdapter.MyViewHolder> {
 
     private static final String TAG = "NoteAdapter";
 
     private Context context;
     private ItemClickListener itemClickListener;
-    private List<Note> noteList = new ArrayList<>();
 
-    public NoteAdapter(Context context, ItemClickListener itemClickListener, List<Note> noteList) {
+    public NoteAdapter(Context context, ItemClickListener itemClickListener) {
+        super(NoteAdapter.DIFF_CALLBACK);
         this.context = context;
         this.itemClickListener = itemClickListener;
-        this.noteList = noteList;
     }
+
+    public static final DiffUtil.ItemCallback<Note> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Note>() {
+                @Override
+                public boolean areItemsTheSame(
+                        @NonNull Note oldNote, @NonNull Note newNote) {
+                    // User properties may have changed if reloaded from the DB, but ID is fixed
+                    return oldNote.getId() == newNote.getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(
+                        @NonNull Note oldNote, @NonNull Note newNote) {
+                    // NOTE: if you use equals, your object must properly override Object#equals()
+                    // Incorrectly returning false here will result in too many animations.
+                    return oldNote.getTitle().equals(newNote.getTitle()) &&
+                            oldNote.getDescription().equals(newNote.getDescription()) &&
+                            oldNote.getPriority() == newNote.getPriority();
+                }
+            };
 
     @NonNull
     @Override
@@ -41,25 +62,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.txt_title.setText(noteList.get(position).getTitle());
-        holder.txt_description.setText(noteList.get(position).getDescription());
-        holder.txt_priority.setText(String.valueOf(noteList.get(position).getPriority()));
-    }
-
-    @Override
-    public int getItemCount() {
-        return noteList.size();
+        holder.txt_title.setText(getItem(position).getTitle());
+        holder.txt_description.setText(getItem(position).getDescription());
+        holder.txt_priority.setText(String.valueOf(getItem(position).getPriority()));
     }
 
     //get the position in list
     public Note getNotePosition(int position){
-        return noteList.get(position);
+        return getItem(position);
     }
 
-    //
-    public void setNotes(List<Note> noteList){
-        this.noteList = noteList;
-    }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 

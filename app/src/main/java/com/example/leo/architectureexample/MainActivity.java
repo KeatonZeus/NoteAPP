@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     private NoteAdapter noteAdapter;
 
-    private List<Note> noteList = new ArrayList<>();
+    //private List<Note> noteList = new ArrayList<>();
 
     private ActivityResultLauncher<Intent> launcher;
 
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
             public void onChanged(List<Note> notes) {
                 Log.d(TAG, "onChanged: called");
 
-                noteAdapter.setNotes(notes);
-                noteAdapter.notifyDataSetChanged();
+                noteAdapter.submitList(notes);
+                //noteAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        noteAdapter = new NoteAdapter(this,this,noteList); //已實作介面所以中間那個用this
+        noteAdapter = new NoteAdapter(this,this); //已實作介面所以中間那個用this
         recyclerView.setAdapter(noteAdapter);
     }
 
