@@ -15,7 +15,7 @@ import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import com.example.leo.architectureexample.Interface.NoteDao;
 import com.example.leo.architectureexample.Model.Note;
 
-@Database(entities = {Note.class},version = 1)
+@Database(entities = {Note.class}, version = 1)
 public abstract class NoteDatabase extends RoomDatabase {
 
     private static NoteDatabase instance;
@@ -36,16 +36,16 @@ public abstract class NoteDatabase extends RoomDatabase {
     }
 
     //instead of starting with empty table, we start with some notes already, 不然一般不用callback
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback(){
+    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-
+            // you cannot do Room database operations on the UI thread, so do in bg
             new PopulateDbAsyncTask(instance).execute();
         }
     };
 
-    private static class PopulateDbAsyncTask extends AsyncTask<Void,Void,Void>{
+    private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private NoteDao noteDao;
 
         public PopulateDbAsyncTask(NoteDatabase noteDatabase) {
@@ -54,9 +54,9 @@ public abstract class NoteDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            noteDao.insert(new Note("Title 1","Description 1",1));
-            noteDao.insert(new Note("Title 2","Description 2",2));
-            noteDao.insert(new Note("Title 3","Description 3",3));
+            noteDao.insert(new Note("Title 1", "Description 1", 1));
+            noteDao.insert(new Note("Title 2", "Description 2", 2));
+            noteDao.insert(new Note("Title 3", "Description 3", 3));
             return null;
         }
     }

@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().setTitle("NoteApp");
+
         initRecyclerView();
         initFabButton();
         initSwipeListToDeleteItem();
